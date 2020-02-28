@@ -161,7 +161,7 @@
       <q-card-section class="q-pa-md row q-gutter-sm">
         <div>
           <p>with QInput, no-header</p>
-          <q-input color="blue-8" filled v-model="value" label="Enter time range" mask="##:## - ##:##">
+          <q-input color="blue-8" filled v-model="value" label="Enter time range" mask="##:##:## - ##:##:##">
             <template v-slot:append>
               <q-icon name="far fa-clock" class="cursor-pointer">
                 <q-popup-proxy v-model="showScroller" anchor="top right" self="bottom middle">

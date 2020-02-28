@@ -9,7 +9,7 @@
         with QInput, rounded-borders, no-header
       </q-card-section>
       <q-card-section class="col-12">
-        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##">
+        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##:##">
           <template v-slot:append>
             <q-icon name="far fa-clock" class="cursor-pointer">
               <q-popup-proxy v-model="showScroller1" anchor="top right" self="bottom middle">
@@ -33,7 +33,7 @@
         with QInput, vertical-bar, no-header
       </q-card-section>
       <q-card-section class="col-12">
-        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##">
+        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##:##">
           <template v-slot:append>
             <q-icon name="far fa-clock" class="cursor-pointer">
               <q-popup-proxy v-model="showScroller2" anchor="top right" self="bottom middle">
@@ -57,7 +57,7 @@
         with QInput, border colors, no-header
       </q-card-section>
       <q-card-section class="col-12">
-        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##">
+        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##:##">
           <template v-slot:append>
             <q-icon name="far fa-clock" class="cursor-pointer">
               <q-popup-proxy v-model="showScroller3" anchor="top right" self="bottom middle">
@@ -83,7 +83,7 @@
         with QInput, colors, rounded-borders, vertical-bar
       </q-card-section>
       <q-card-section class="col-12">
-        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##">
+        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##:##">
           <template v-slot:append>
             <q-icon name="far fa-clock" class="cursor-pointer">
               <q-popup-proxy v-model="showScroller4" anchor="top right" self="bottom middle">
@@ -112,7 +112,7 @@
         with QInput, rounded-borders, vertical-bar, dense
       </q-card-section>
       <q-card-section class="col-12">
-        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##">
+        <q-input color="blue-8" filled v-model="value" label="Enter time" mask="##:##:##">
           <template v-slot:append>
             <q-icon name="far fa-clock" class="cursor-pointer">
               <q-popup-proxy v-model="showScroller5" anchor="top right" self="bottom middle">

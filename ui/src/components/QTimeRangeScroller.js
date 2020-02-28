@@ -92,8 +92,10 @@ export default {
           endParts = this.endTime.split(':')
           start.hour = parseInt(startParts[0], 10)
           start.minute = parseInt(startParts[1], 10)
+          start.second = parseInt(startParts[2], 10)
           end.hour = parseInt(endParts[0], 10)
           end.minute = parseInt(endParts[1], 10)
+          end.second = parseInt(endParts[2], 10)
           this.$emit('input', [getDateObject(start), getDateObject(end)])
           return
         case 'array':
@@ -107,7 +109,7 @@ export default {
           startParts = this.startTime.split(':')
           endParts = this.endTime.split(':')
           this.$emit('input', [
-            { hour: parseInt(startParts[0], 10), minute: parseInt(startParts[1], 10) }, { hour: parseInt(endParts[0], 10), minute: parseInt(endParts[1], 10) }
+            { hour: parseInt(startParts[0], 10), minute: parseInt(startParts[1], 10), second: parseInt(startParts[2], 10) }, { hour: parseInt(endParts[0], 10), minute: parseInt(endParts[1], 10) , second: parseInt(endParts[2], 10) }
           ])
 
           return
@@ -142,8 +144,10 @@ export default {
         const endParts = this.endTime.split(':')
         start.hour = parseInt(startParts[0])
         start.minute = parseInt(startParts[1])
+        start.second = parseInt(startParts[2])
         end.hour = parseInt(endParts[0])
         end.minute = parseInt(endParts[1])
+        end.second = parseInt(endParts[2])
         const startTime = getTimeIdentifier(start)
         const endTime = getTimeIdentifier(end)
         if (endTime >= startTime) {
@@ -198,8 +202,8 @@ export default {
           return
         case '[object Object]':
           this.type = 'object'
-          start = padNumber(parseInt(this.value[0].hour, 10), 2) + ':' + padNumber(parseInt(this.value[0].minute, 10), 2)
-          end = padNumber(parseInt(this.value[1].hour, 10), 2) + ':' + padNumber(parseInt(this.value[1].minute, 10), 2)
+          start = padNumber(parseInt(this.value[0].hour, 10), 2) + ':' + padNumber(parseInt(this.value[0].minute, 10), 2) + ':' + padNumber(parseInt(this.value[0].second, 10), 2)
+          end = padNumber(parseInt(this.value[1].hour, 10), 2) + ':' + padNumber(parseInt(this.value[1].minute, 10), 2) + ':' + padNumber(parseInt(this.value[1].second, 10), 2)
           if (this.isValidTime(start) && this.isValidTime(end)) {
             this.startTime = start
             this.endTime = end
@@ -261,11 +265,14 @@ export default {
           noFooter: true,
           hour12: this.hour12,
           amPmLabels: this.startAmPmLabels,
+          secondInterval: this.startSecondInterval,
           minuteInterval: this.startMinuteInterval,
           hourInterval: this.startHourInterval,
           shortTimeLabel: this.startShortTimeLabel,
           disabledHours: this.startDisabledHours,
+          disabledSeconds: this.startDisabledSeconds,
           disabledMinutes: this.startDisabledMinutes,
+          noSeconds: this.startNoSeconds,
           noMinutes: this.startNoMinutes,
           noHours: this.startNoHours,
           childHeight: this.bodyHeight
@@ -300,11 +307,14 @@ export default {
           noFooter: true,
           hour12: this.hour12,
           amPmLabels: this.endAmPmLabels,
+          secondInterval: this.startSecondInterval,
           minuteInterval: this.endMinuteInterval,
           hourInterval: this.endHourInterval,
           shortTimeLabel: this.endShortTimeLabel,
           disabledHours: this.endDisabledHours,
+          disabledSeconds: this.startDisabledSeconds,
           disabledMinutes: this.endDisabledMinutes,
+          noSeconds: this.startNoSeconds,
           noMinutes: this.endNoMinutes,
           noHours: this.endNoHours,
           childHeight: this.bodyHeight

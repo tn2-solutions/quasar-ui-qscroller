@@ -14,6 +14,7 @@ export const MONTH_MIN = 1
 export const DAY_MIN = 1
 export const DAYS_IN_WEEK = 7
 export const MINUTES_IN_HOUR = 60
+export const SECONDS_IN_MINUTE = 60
 export const HOURS_IN_DAY = 24
 export const FIRST_HOUR = 0
 export const MILLISECONDS_IN_DAY = 86400000
@@ -30,6 +31,7 @@ export const Timestamp = {
   weekday: 0, // Number
   hour: 0, // Number
   minute: 0, // Number
+  second: 0, // Number
   doy: 0, // Number (day of year)
   workweek: 0, // Number
   hasDay: false, // Boolean
@@ -42,7 +44,8 @@ export const Timestamp = {
 /* TimeObject definition */
 export const TimeObject = {
   hour: 0, // Number
-  minute: 0 // Number
+  minute: 0, // Number
+  second: 0 // Number
 }
 
 export function getStartOfWeek (timestamp, weekdays, today) {
@@ -124,11 +127,12 @@ export function parsed (input) {
     day: parseInt(parts[4], 10) || 1,
     hour: parseInt(parts[6], 10) || 0,
     minute: parseInt(parts[8], 10) || 0,
+    second: parseInt(parts[10], 10) || 0,
     weekday: 0,
     doy: 0,
     workweek: 0,
     hasDay: !!parts[4],
-    hasTime: !!(parts[6] && parts[8]),
+    hasTime: !!(parts[6] && parts[8] && parts[10]),
     past: false,
     current: false,
     future: false
@@ -158,6 +162,7 @@ export function parseDate (date) {
     weekday: date.getDay(),
     hour: date.getHours(),
     minute: date.getMinutes(),
+    second: date.getSeconds(),
     doy: 0,
     workweek: 0,
     hasDay: true,
@@ -173,7 +178,7 @@ export function getDayIdentifier (timestamp) {
 }
 
 export function getTimeIdentifier (timestamp) {
-  return timestamp.hour * 100 + timestamp.minute
+  return timestamp.hour * 10000 + timestamp.minute * 100 + timestamp.second
 }
 
 export function updateRelative (timestamp, now, time = false) {
@@ -198,6 +203,18 @@ export function updateMinutes (timestamp, minutes, now) {
   timestamp.hasTime = true
   timestamp.hour = Math.floor(minutes / MINUTES_IN_HOUR)
   timestamp.minute = minutes % MINUTES_IN_HOUR
+  timestamp.time = getTime(timestamp)
+  if (now) {
+    updateRelative(timestamp, now, true)
+  }
+
+  return timestamp
+}
+
+export function updateSeconds (timestamp, seconds, now) {
+  timestamp.hasTime = true
+  timestamp.minute = Math.floor(seconds / SECONDS_IN_MINUTE)
+  timestamp.second = seconds % SECONDS_IN_MINUTE
   timestamp.time = getTime(timestamp)
   if (now) {
     updateRelative(timestamp, now, true)
@@ -236,19 +253,19 @@ export function updateFormatted (timestamp) {
 
 export function getDayOfYear (timestamp) {
   if (timestamp.year === 0) return
-  const dt = new Date(timestamp.date + ' 00:00')
+  const dt = new Date(timestamp.date + ' 00:00:00')
   return date.getDayOfYear(dt)
 }
 
 export function getWorkWeek (timestamp) {
   if (timestamp.year === 0) return
-  const ts = new Date(timestamp.date + ' 00:00')
+  const ts = new Date(timestamp.date + ' 00:00:00')
   return date.getWeekOfYear(ts)
 }
 
 export function getWeekday (timestamp) {
   if (timestamp.hasDay) {
-    const ts = new Date(timestamp.date + ' 00:00')
+    const ts = new Date(timestamp.date + ' 00:00:00')
     return date.getDayOfWeek(ts)
   }
 
@@ -293,7 +310,7 @@ export function getTime (timestamp) {
     return ''
   }
 
-  return `${padNumber(timestamp.hour, 2)}:${padNumber(timestamp.minute, 2)}`
+  return `${padNumber(timestamp.hour, 2)}:${padNumber(timestamp.minute, 2)}:${padNumber(timestamp.second, 2)}`
 }
 
 export function nextMinutes (timestamp, minutes) {
@@ -304,6 +321,20 @@ export function nextMinutes (timestamp, minutes) {
     if (timestamp.hour >= HOURS_IN_DAY) {
       nextDay(timestamp)
       timestamp.hour = FIRST_HOUR
+    }
+  }
+
+  return timestamp
+}
+
+export function nextSeconds (timestamp, seconds) {
+  timestamp.second += seconds
+  while (timestamp.second > SECONDS_IN_MINUTE) {
+    timestamp.second -= SECONDS_IN_MINUTE
+    ++timestamp.minute
+    if (timestamp.minute >= MINUTES_IN_HOUR) {
+      nextMinutes(timestamp)
+      timestamp.minute = 0
     }
   }
 
@@ -424,14 +455,14 @@ export function createNativeLocaleFormatter (locale, getOptions) {
   }
 
   return (timestamp, short) => {
-    const time = `${padNumber(timestamp.hour, 2)}:${padNumber(timestamp.minute, 2)}`
+    const time = `${padNumber(timestamp.hour, 2)}:${padNumber(timestamp.minute, 2)}:${padNumber(timestamp.second, 2)}`
     const year = padNumber(timestamp.year, 4)
     const month = padNumber(timestamp.month, 2)
     const day = padNumber(timestamp.day, 2)
     const date = [year, month, day].join('-')
     try {
       const intlFormatter = new Intl.DateTimeFormat(locale || void 0, getOptions(timestamp, short))
-      return intlFormatter.format(new Date(`${date}T${time}:00+00:00`))
+      return intlFormatter.format(new Date(`${date}T${time}+00:00`))
     } catch (e) {
       /* eslint-disable-next-line */
       console.error(`Intl.DateTimeFormat: ${e.message} -> ${date}T${time}`)

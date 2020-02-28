@@ -41,13 +41,16 @@ export default {
       ampm: '',
       hour: '',
       minute: '',
+      second: '',
       ampmIndex: -1, // 2 states: 0=AM, 1=PM (indices into amPmLabels)
       timestamp: null,
       type: null,
+      disabledSecondsList: [],
       disabledMinutesList: [],
       disabledHoursList: [],
       hourInitialized: false,
       minuteInitialized: false,
+      secondInitialized: false,
       ampmInitialized: false
     }
   },
@@ -83,6 +86,26 @@ export default {
             noCaps: true
           }
         })
+    },
+
+    secondsList () {
+      let count = 60
+      if (this.secondInterval !== void 0 && parseInt(this.secondInterval, 10) > 0) {
+        count /= parseInt(this.secondInterval, 10)
+      }
+      let data = []
+      for (let index = 0; index < count; ++index) {
+        data.push(index)
+      }
+      data = data.map(m => {
+        m *= this.secondInterval ? parseInt(this.secondInterval, 10) : 1
+        m = m < 10 ? '0' + m : '' + m
+        return {
+          value: m,
+          disabled: this.disabledSecondsList.includes(m)
+        }
+      })
+      return data
     },
 
     minutesList () {
@@ -145,8 +168,8 @@ export default {
     },
 
     timeFormatter () {
-      const longOptions = { timeZone: 'UTC', hour12: this.hour12, hour: '2-digit', minute: '2-digit' }
-      const shortOptions = { timeZone: 'UTC', hour12: this.hour12, hour: 'numeric', minute: '2-digit' }
+      const longOptions = { timeZone: 'UTC', hour12: this.hour12, hour: '2-digit', minute: '2-digit', second: '2-digit' }
+      const shortOptions = { timeZone: 'UTC', hour12: this.hour12, hour: 'numeric', minute: '2-digit', second: '2-digit' }
       const shortHourOptions = { timeZone: 'UTC', hour12: this.hour12, hour: 'numeric' }
 
       return createNativeLocaleFormatter(
@@ -199,6 +222,15 @@ export default {
       }
     },
 
+    second () {
+      this.timestamp.second = parseInt(this.second, 10)
+      if (this.secondInitialized === true) {
+        this.emitValue()
+      } else {
+        this.secondInitialized = true
+      }
+    },
+
     ampm () {
       this.ampmIndex = this.amPmLabels.findIndex(ap => ap === this.ampm)
     },
@@ -211,6 +243,10 @@ export default {
         this.hour = padNumber(this.timestamp.hour, 2)
       }
       this.emitValue()
+    },
+
+    disabledSeconds () {
+      this.handleDisabledLists()
     },
 
     disabledMinutes () {
@@ -264,20 +300,22 @@ export default {
           this.$emit('input', getDateObject(this.timestamp))
           return
         case 'array':
-          this.$emit('input', [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2)])
+          this.$emit('input', [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2), padNumber(this.timestamp.second, 2)])
           return
         case 'object':
-          this.$emit('input', { hour: padNumber(this.timestamp.hour, 2), minute: padNumber(this.timestamp.minute, 2) })
+          this.$emit('input', { hour: padNumber(this.timestamp.hour, 2), minute: padNumber(this.timestamp.minute, 2), second: padNumber(this.timestamp.second, 2) })
           return
         case 'string':
-          this.$emit('input', [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2)].join(':'))
+          this.$emit('input', [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2), padNumber(this.timestamp.second, 2)].join(':'))
       }
     },
 
     handleDisabledLists () {
+      this.disabledSecondsList = []
       this.disabledMinutesList = []
       this.disabledHoursList = []
 
+      this.disabledSeconds.forEach(s => this.disabledSecondsList.push(padNumber(parseInt(s, 10), 2)))
       this.disabledMinutes.forEach(m => this.disabledMinutesList.push(padNumber(parseInt(m, 10), 2)))
       this.disabledHours.forEach(h => this.disabledHoursList.push(padNumber(parseInt(h, 10), 2)))
     },
@@ -292,6 +330,7 @@ export default {
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
           this.timestamp.minute = Math.floor((this.timestamp.minute / this.minuteInterval)) * this.minuteInterval
+          this.timestamp.second = Math.floor((this.timestamp.second / this.secondInterval)) * this.secondInterval
           // this.ampmIndex = this.timestamp.hour > 12 && this.timestamp.minute >= 0 ? 1 : 0
           this.fromTimestamp()
           return
@@ -301,9 +340,11 @@ export default {
           now = parseDate(new Date())
           now.hour = parseInt(this.value[0], 10)
           now.minute = parseInt(this.value[1], 10)
+          now.second = parseInt(this.value[2], 10)
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
           this.timestamp.minute = Math.floor((this.timestamp.minute / this.minuteInterval)) * this.minuteInterval
+          this.timestamp.second = Math.floor((this.timestamp.second / this.secondInterval)) * this.secondInterval
           // this.ampmIndex = this.timestamp.hour > 12 && this.timestamp.minute >= 0 ? 1 : 0
           this.fromTimestamp()
           return
@@ -313,9 +354,11 @@ export default {
           now = parseDate(new Date())
           now.hour = parseInt(this.value.hour, 10)
           now.minute = parseInt(this.value.minute, 10)
+          now.second = parseInt(this.value.second, 10)
           date = getDate(now) + ' ' + getTime(now, 10)
           this.timestamp = parseTimestamp(date)
           this.timestamp.minute = Math.floor((this.timestamp.minute / this.minuteInterval)) * this.minuteInterval
+          this.timestamp.second = Math.floor((this.timestamp.second / this.secondInterval)) * this.secondInterval
           // this.ampmIndex = this.timestamp.hour > 12 && this.timestamp.minute >= 0 ? 1 : 0
           this.fromTimestamp()
           return
@@ -327,10 +370,12 @@ export default {
             const parts = PARSE_TIME.exec(this.value)
             now.hour = parseInt(parts[1], 10)
             now.minute = parseInt(parts[3] || 0, 10)
+            now.second = parseInt(parts[5] || 0, 10)
           }
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
           this.timestamp.minute = Math.floor((this.timestamp.minute / this.minuteInterval)) * this.minuteInterval
+          this.timestamp.second = Math.floor((this.timestamp.second / this.secondInterval)) * this.secondInterval
           if (this.timestamp.hour >= 24) {
             this.timestamp.hour %= 24
           }
@@ -345,6 +390,7 @@ export default {
     },
 
     fromTimestamp () {
+      this.second = padNumber(this.timestamp.second, 2)
       this.minute = padNumber(this.timestamp.minute, 2)
       if (this.hour12 === true) {
         if (this.timestamp.hour === 12) {
@@ -405,10 +451,31 @@ export default {
           disabledTextColor: this.disabledTextColor
         },
         class: {
-          'q-scroller__vertical-bar': this.verticalBar === true && this.hour12 === true
+          'q-scroller__vertical-bar': this.verticalBar === true
         },
         on: {
           input: (val) => { this.minute = val }
+        }
+      })
+    },
+
+    __renderSecondsScroller (h) {
+      return h(ScrollerBase, {
+        staticClass: 'col',
+        props: {
+          value: this.second,
+          items: this.secondsList,
+          dense: this.dense,
+          disable: this.disable,
+          textColor: this.innerTextColor,
+          color: this.innerColor,
+          disabledTextColor: this.disabledTextColor
+        },
+        class: {
+          'q-scroller__vertical-bar': this.verticalBar === true && this.hour12 === true
+        },
+        on: {
+          input: (val) => { this.second = val }
         }
       })
     },
@@ -435,6 +502,7 @@ export default {
       return [
         this.noHours !== true && this.__renderHoursScroller(h),
         this.noMinutes !== true && this.__renderMinutesScroller(h),
+        this.noSeconds !== true && this.__renderSecondsScroller(h),
         this.hour12 === true && this.__renderAmPmScroller(h)
       ]
     }

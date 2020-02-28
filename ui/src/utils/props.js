@@ -100,6 +100,10 @@ export default {
     yearStop: [Number, String]
   },
   time: {
+    secondInterval: {
+      type: [String, Number],
+      default: 1
+    },
     minuteInterval: {
       type: [String, Number],
       default: 1
@@ -117,6 +121,11 @@ export default {
       type: Array,
       default: () => []
     },
+    disabledSeconds: {
+      type: Array,
+      default: () => []
+    },
+    noSeconds: Boolean,
     noMinutes: Boolean,
     noHours: Boolean
   },
@@ -137,6 +146,10 @@ export default {
     // --------------------------------
     // start time
     // --------------------------------
+    startSecondInterval: {
+      type: [String, Number],
+      default: 1
+    },
     startMinuteInterval: {
       type: [String, Number],
       default: 1
@@ -154,6 +167,11 @@ export default {
       type: Array,
       default: () => []
     },
+    startDisabledSeconds: {
+      type: Array,
+      default: () => []
+    },
+    startNoSeconds: Boolean,
     startNoMinutes: Boolean,
     startNoHours: Boolean,
     startAmPmLabels: {
@@ -165,6 +183,10 @@ export default {
     // --------------------------------
     // end time
     // --------------------------------
+    endSecondInterval: {
+      type: [String, Number],
+      default: 1
+    },
     endMinuteInterval: {
       type: [String, Number],
       default: 1
@@ -182,6 +204,11 @@ export default {
       type: Array,
       default: () => []
     },
+    endDisabledSeconds: {
+      type: Array,
+      default: () => []
+    },
+    endNoSeconds: Boolean,
     endNoMinutes: Boolean,
     endNoHours: Boolean,
     endAmPmLabels: {

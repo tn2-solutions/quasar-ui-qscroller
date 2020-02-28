@@ -120,13 +120,13 @@ export default {
           this.$emit('input', getDateObject(this.timestamp))
           return
         case 'array':
-          this.$emit('input', [padNumber(this.timestamp.year, 2), padNumber(this.timestamp.month, 2), padNumber(this.timestamp.day, 2), padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2)])
+          this.$emit('input', [padNumber(this.timestamp.year, 2), padNumber(this.timestamp.month, 2), padNumber(this.timestamp.day, 2), padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2), padNumber(this.timestamp.second, 2)])
           return
         case 'object':
-          this.$emit('input', { year: padNumber(this.timestamp.year, 2), month: padNumber(this.timestamp.month, 2), day: padNumber(this.timestamp.day, 2), hour: padNumber(this.timestamp.hour, 2), minute: padNumber(this.timestamp.minute, 2) })
+          this.$emit('input', { year: padNumber(this.timestamp.year, 2), month: padNumber(this.timestamp.month, 2), day: padNumber(this.timestamp.day, 2), hour: padNumber(this.timestamp.hour, 2), minute: padNumber(this.timestamp.minute, 2), second: padNumber(this.timestamp.second, 2) })
           return
         case 'string':
-          this.$emit('input', [padNumber(this.timestamp.year, 2), padNumber(this.timestamp.month, 2), padNumber(this.timestamp.day, 2)].join('-') + ' ' + [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2)].join(':'))
+          this.$emit('input', [padNumber(this.timestamp.year, 2), padNumber(this.timestamp.month, 2), padNumber(this.timestamp.day, 2)].join('-') + ' ' + [padNumber(this.timestamp.hour, 2), padNumber(this.timestamp.minute, 2), padNumber(this.timestamp.second, 2)].join(':'))
       }
     },
 
@@ -150,6 +150,7 @@ export default {
           now.day = parseInt(this.value[2], 10)
           now.hour = parseInt(this.value[3], 10)
           now.minute = parseInt(this.value[4], 10)
+          now.second = parseInt(this.value[5], 10)
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
           this.fromTimestamp()
@@ -163,6 +164,7 @@ export default {
           now.day = parseInt(this.value.day, 10)
           now.hour = parseInt(this.value.hour, 10)
           now.minute = parseInt(this.value.minute, 10)
+          now.second = parseInt(this.value.second, 10)
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
           this.fromTimestamp()
@@ -178,6 +180,7 @@ export default {
             if (tm.day !== void 0) now.day = tm.day
             if (tm.hour !== void 0) now.hour = tm.hour
             if (tm.minute !== void 0) now.minute = tm.minute
+            if (tm.second !== void 0) now.second = tm.second
           }
           date = getDate(now) + ' ' + getTime(now)
           this.timestamp = parseTimestamp(date)
@@ -217,7 +220,7 @@ export default {
           noHeader: true,
           noFooter: true,
           startDate: this.startDate,
-          endDate: this.EndDate,
+          endDate: this.endDate,
           disabledYears: this.disabledYears,
           disabledMonths: this.disabledMonths,
           disabledDays: this.disabledDays,
@@ -260,11 +263,14 @@ export default {
           noFooter: true,
           hour12: this.hour12,
           amPmLabels: this.ampPmLabels,
+          secondInterval: this.secondInterval,
           minuteInterval: this.minuteInterval,
           hourInterval: this.hourInterval,
           shortTimeLabel: this.shortTimeLabel,
           disabledHours: this.disabledHours,
           disabledMinutes: this.disabledMinutes,
+          disabledSeconds: this.disabledSeconds,
+          noSeconds: this.noSeconds,
           noMinutes: this.noMinutes,
           noHours: this.noHours,
           childHeight: this.bodyHeight
